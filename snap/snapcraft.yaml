@@ -1,0 +1,39 @@
+name: mcp3008-test
+base: core18
+version: '0.1'
+summary: Simple test scripts for mcp3008 A/D converter attached to spi0
+description: |
+  This is a simple test tool to read values from a MCP3008 A/D converter
+  attached to a raspberry pi via spi0
+
+grade: stable
+confinement: strict
+
+apps:
+  simpletest:
+    command: python $SNAP/examples/simpletest.py
+    plugs:
+      - spi
+
+parts:
+  mcp3008:
+    source: https://github.com/adafruit/Adafruit_Python_MCP3008.git
+    plugin: python
+    python-version: python2
+    override-build: |
+      git apply -v ../../../simpletest.patch
+      snapcraftctl build
+      cp -av examples $SNAPCRAFT_PART_INSTALL/
+    build-packages:
+      - gcc
+      - git
+      - libssl-dev
+      - libffi-dev
+      - python-dev
+      - python-pil
+      - python-smbus
+    stage-packages:
+      - libffi6
+      - libssl1.0.0
+      - python-pil
+      - python-smbus
